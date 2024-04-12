@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
+import com.udacity.jwdnd.course1.cloudstorage.constants.AppConstants;
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
 import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
@@ -38,7 +39,22 @@ public class FileController {
             return "redirect:/logout";
         }
 
+        // check the file is empty or not
+        if (fileUpload.isEmpty()) {
+            errorMsg = "There was an error!!! The file is empty. Please try again";
+            model.addAttribute("error", errorMsg);
+            return "result";
+        }
+
+        // check upload size is permitted or not
+        if (fileUpload.getSize() >= AppConstants.MAX_FILE_UPLOAD_SIZE) {
+            errorMsg = "There was an error!!! The size of file is too large.";
+            model.addAttribute("error", errorMsg);
+            return "result";
+        }
+
         try {
+            // check the file already exists or not
             File existedFileWithSameName = fileService.getFileByFileName(fileUpload.getOriginalFilename(), loggedInUser.getUserId());
             if (existedFileWithSameName == null) {
                 fileService.addNewFile(new File(null, fileUpload.getOriginalFilename(), fileUpload.getContentType(), fileUpload.getSize(), loggedInUser.getUserId(), fileUpload.getBytes()));
