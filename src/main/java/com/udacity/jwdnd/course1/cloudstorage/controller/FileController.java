@@ -119,7 +119,10 @@ public class FileController {
         try {
             File file = fileService.getFileByFileId(fileId, loggedInUser.getUserId());
             if (file != null) {
-                return ResponseEntity.ok().contentType(MediaType.parseMediaType(file.getContentType())).body(new ByteArrayResource(file.getFileData()));
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(file.getContentType()))
+                        .header("Content-Disposition", "attachment; filename=" + file.getFileName())
+                        .body(new ByteArrayResource(file.getFileData()));
             }
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
